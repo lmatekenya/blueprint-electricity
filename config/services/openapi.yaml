@@ -1,0 +1,6 @@
+services:
+  App\OpenApi\V1PathDecorator:
+    decorates: 'api_platform.openapi.factory'
+    arguments: ['@App\OpenApi\V1PathDecorator.inner']
+    autowire: true
+    autoconfigure: false

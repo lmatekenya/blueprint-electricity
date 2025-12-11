@@ -1,0 +1,81 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block content %}
+    <h1>Welcome to the Admin Panel</h1>
+    <p>Use the menu to manage Users and Electricity Transactions.</p>
+{% endblock %}
+{% block content %}
+    <h1 style="font-size: 24px; font-weight: bold; margin-bottom: 20px;">Admin Dashboard</h1><br>
+
+    {# Stats as flex row with simple CSS #}
+    <div style="display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 30px;">
+        <div style="flex: 1 1 150px; padding: 15px; background-color: #f0f0f0; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center;">
+            <div style="font-size: 16px; color: #555;">Total Transactions</div>
+            <div style="font-size: 20px; font-weight: bold;">{{ totalTransactions }}</div>
+        </div>
+        <div style="flex: 1 1 150px; padding: 15px; background-color: #fff3cd; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center;">
+            <div style="font-size: 16px; color: #555;">Pending</div>
+            <div style="font-size: 20px; font-weight: bold;">{{ pending }}</div>
+        </div>
+        <div style="flex: 1 1 150px; padding: 15px; background-color: #d4edda; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center;">
+            <div style="font-size: 16px; color: #555;">Success</div>
+            <div style="font-size: 20px; font-weight: bold;">{{ success }}</div>
+        </div>
+        <div style="flex: 1 1 150px; padding: 15px; background-color: #f8d7da; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center;">
+            <div style="font-size: 16px; color: #555;">Failed</div>
+            <div style="font-size: 20px; font-weight: bold;">{{ failed }}</div>
+        </div>
+    </div><br>
+
+    {# Recent Transactions Table #}
+    <h2 style="font-size: 20px; font-weight: bold; margin-bottom: 10px;">Recent Transactions</h2><br>
+    <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; border: 1px solid #ccc;">
+            <thead>
+            <tr style="background-color: #eee;">
+                <th style="border: 1px solid #ccc; padding: 5px;">ID</th>
+                <th style="border: 1px solid #ccc; padding: 5px;">TransID</th>
+                <th style="border: 1px solid #ccc; padding: 5px;">Meter</th>
+                <th style="border: 1px solid #ccc; padding: 5px;">Amount</th>
+                <th style="border: 1px solid #ccc; padding: 5px;">Status</th>
+                <th style="border: 1px solid #ccc; padding: 5px;">Provider</th>
+                <th style="border: 1px solid #ccc; padding: 5px;">Created At</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for tx in recentTransactions %}
+                <tr>
+                    <td style="border: 1px solid #ccc; padding: 5px;">{{ tx.id }}</td>
+                    <td style="border: 1px solid #ccc; padding: 5px;">{{ tx.transID }}</td>
+                    <td style="border: 1px solid #ccc; padding: 5px;">{{ tx.meterNumber }}</td>
+                    <td style="border: 1px solid #ccc; padding: 5px;">{{ tx.amount }}</td>
+                    <td style="border: 1px solid #ccc; padding: 5px; font-weight: bold; color:
+                        {% if tx.status == 'pending' %}#856404
+                        {% elseif tx.status == 'processing' %}#004085
+                        {% elseif tx.status == 'success' %}#155724
+                        {% elseif tx.status == 'failed' %}#721c24
+                        {% else %}#333{% endif %};
+                        ">
+                        {{ tx.status|capitalize }}
+                    </td>
+                    <td style="border: 1px solid #ccc; padding: 5px; font-weight: bold; color:
+                        {% if tx.provider == 'prepaidplus' %}#6f42c1
+                        {% elseif tx.provider == 'craftapi' %}#3730a3
+                        {% else %}#333{% endif %};
+                        ">
+                        {{ tx.provider|capitalize }}
+                    </td>
+                    <td style="border: 1px solid #ccc; padding: 5px;">{{ tx.createdAt|date('Y-m-d H:i') }}</td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="7" style="border: 1px solid #ccc; padding: 5px; text-align: center; color: #777;">
+                        No transactions were found.
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

@@ -1,0 +1,172 @@
+#
+#security:
+#  password_hashers:
+#    App\Entity\User: 'auto'
+#
+#  providers:
+#    app_user_provider:
+#      entity:
+#        class: App\Entity\User
+#        property: email
+#
+#  firewalls:
+#    dev:
+#      pattern: ^/(_(profiler|wdt)|css|images|js)/
+#      security: false
+#
+#    api:
+#      pattern: ^/api/
+#      lazy: true
+#      provider: app_user_provider
+#      # Allow sessions for API (session + token supported)
+#      stateless: true
+#      custom_authenticators:
+#        - App\Security\BearerTokenAuthenticator
+#      entry_point: App\Security\BearerTokenAuthenticator
+#
+#    main:
+#      lazy: true
+#      provider: app_user_provider
+#      # Web firewall (forms, admin area). Keep sessions.
+#      form_login:
+#        login_path: app_login
+#        check_path: app_login
+#      logout:
+#        path: app_logout
+#
+#  access_control:
+#    # Allow Swagger UI + Docs + Resources
+#    - { path: ^/api/docs, roles: PUBLIC_ACCESS }
+#    - { path: ^/api/docs.json, roles: PUBLIC_ACCESS }
+#    - { path: ^/api$, roles: PUBLIC_ACCESS } # swagger UI root
+#
+#    # Admin area restriction
+#    - { path: ^/admin, roles: ROLE_ADMIN }
+#    # Public API endpoints
+#    - { path: ^/api/v1/auth/login, roles: PUBLIC_ACCESS }
+#    - { path: ^/api/v1/auth/me, roles: PUBLIC_ACCESS }
+#    - { path: ^/api/v1/electricity/verify-customer, roles: PUBLIC_ACCESS }
+#    # The rest of /api requires authenticated user
+#    - { path: ^/api/, roles: ROLE_USER }
+#        # All other API routes require full authentication
+#    - { path: ^/api/v1, roles: IS_AUTHENTICATED_FULLY }
+#
+#        # Homepage and other public pages
+#    - { path: ^/, roles: PUBLIC_ACCESS }
+
+security:
+    password_hashers:
+        App\Entity\User: 'auto'
+
+    providers:
+        app_user_provider:
+            entity:
+                class: App\Entity\User
+                property: email
+
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+        # ⚠ Make Swagger/docs fully public, outside API firewall
+        swagger:
+            pattern: ^/api/docs
+            security: false
+
+        swagger_json:
+            pattern: ^/api/docs.json
+            security: false
+
+        swagger_root:
+            pattern: ^/api$
+            security: false
+
+        api:
+            pattern: ^/api/
+            lazy: true
+            provider: app_user_provider
+            stateless: true
+            custom_authenticators:
+                - App\Security\BearerTokenAuthenticator
+
+        main:
+            lazy: true
+            provider: app_user_provider
+            form_login:
+                login_path: app_login
+                check_path: app_login
+            logout:
+                path: app_logout
+#
+#    access_control:
+#        # Swagger (public)
+#        - { path: ^/api/docs, roles: PUBLIC_ACCESS }
+#        - { path: ^/api/docs.json, roles: PUBLIC_ACCESS }
+#        - { path: ^/api$, roles: PUBLIC_ACCESS }
+#
+#        # Public API endpoints
+#        - { path: ^/api/v1/auth/login, roles: PUBLIC_ACCESS }
+#        - { path: ^/api/v1/auth/me, roles: PUBLIC_ACCESS }
+#        - { path: ^/api/v1/electricity/verify-customer, roles: PUBLIC_ACCESS }
+#
+#        # The rest requires login
+#        - { path: ^/api/, roles: IS_AUTHENTICATED_FULLY }
+#
+#        # 👇 Allow user registration
+#        - { path: ^/api/users$, roles: PUBLIC_ACCESS, methods: [ POST ] }
+#
+#        # Admin
+#        - { path: ^/admin, roles: ROLE_ADMIN }
+#
+#        # Homepage public
+#        - { path: ^/, roles: PUBLIC_ACCESS }
+
+    access_control:
+        # Swagger (public)
+        - { path: ^/api/docs, roles: PUBLIC_ACCESS }
+        - { path: ^/api/docs.json, roles: PUBLIC_ACCESS }
+        - { path: ^/api$, roles: PUBLIC_ACCESS }
+
+        # Public API endpoints (specific first)
+        - { path: ^/api/users/\d+$, roles: PUBLIC_ACCESS, methods: [ GET ] }
+        - { path: ^/api/users$, roles: PUBLIC_ACCESS, methods: [GET, POST] }
+        - { path: ^/api/v1/auth/login, roles: PUBLIC_ACCESS }
+        - { path: ^/api/v1/auth/me, roles: PUBLIC_ACCESS }
+        - { path: ^/api/v1/electricity/verify-customer, roles: PUBLIC_ACCESS }
+
+        # Protected API
+        - { path: ^/api/, roles: IS_AUTHENTICATED_FULLY }
+
+        # Admin login
+        - { path: ^/admin/login$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+
+        # Admin section
+        - { path: ^/admin, roles: ROLE_ADMIN }
+
+        # Homepage public
+        - { path: ^/, roles: PUBLIC_ACCESS }
+
+
+#    access_control:
+#        # Swagger (public)
+#        - { path: ^/api/docs, roles: PUBLIC_ACCESS }
+#        - { path: ^/api/docs.json, roles: PUBLIC_ACCESS }
+#        - { path: ^/api$, roles: PUBLIC_ACCESS }
+#
+#        # Public API endpoints
+#        - { path: ^/api/users$, roles: PUBLIC_ACCESS, methods: [GET, POST] } # <--- move above ^/api/
+#        - { path: ^/api/users/\d+$, roles: PUBLIC_ACCESS, methods: [ GET ] }  # allow collection read
+#        - { path: ^/api/v1/auth/login, roles: PUBLIC_ACCESS }
+#        - { path: ^/api/v1/auth/me, roles: PUBLIC_ACCESS }
+#        - { path: ^/api/v1/electricity/verify-customer, roles: PUBLIC_ACCESS }
+#
+#        # The rest requires login
+#        - { path: ^/api/, roles: IS_AUTHENTICATED_FULLY }
+#        - { path: ^/admin/login$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+#
+#        # Admin
+#        - { path: ^/admin, roles: ROLE_ADMIN }
+#
+#        # Homepage public
+#        - { path: ^/, roles: PUBLIC_ACCESS }

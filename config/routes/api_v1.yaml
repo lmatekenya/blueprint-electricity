@@ -1,0 +1,16 @@
+api_v1_electricity:
+    resource: ../../src/Controller/Api/V1/
+    type: attribute
+    prefix: /api/v1
+    name_prefix: api_v1_
+    requirements:
+        _format: json
+
+api_v1_auth:
+    path: /api/v1/auth/{action}
+    controller: App\Controller\Api\V1\AuthController::{action}
+    requirements:
+        action: login|logout|refresh-token|me
+    methods: [POST, GET]
+    defaults:
+        _format: json

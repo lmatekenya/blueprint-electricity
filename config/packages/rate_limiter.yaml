@@ -1,0 +1,12 @@
+#framework:
+#    rate_limiter:
+#        api:
+#            policy: 'token_bucket'
+#            limit: '%env(int:RATE_LIMIT_REQUESTS)%'
+#            interval: '%env(RATE_LIMIT_PERIOD)% seconds'
+framework:
+  rate_limiter:
+    electricity_verify:
+      policy: fixed_window
+      limit: 3
+      interval: '5 minutes'

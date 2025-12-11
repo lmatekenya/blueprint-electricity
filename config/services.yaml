@@ -1,0 +1,137 @@
+#services:
+#    _defaults:
+#        autowire: true
+#        autoconfigure: true
+#        bind:
+#            $prepaidPlusBaseUrl: '%env(PREPAIDPLUS_BASE_URL)%'
+#            $prepaidPlusAuthToken: '%env(PREPAIDPLUS_AUTH_TOKEN)%'
+#            $craftApiBaseUrl: '%env(CRAFTAPI_BASE_URL)%'
+#            $craftApiUsername: '%env(CRAFTAPI_USERNAME)%'
+#            $craftApiPassword: '%env(CRAFTAPI_PASSWORD)%'
+#            $logServerUrl: '%env(LOG_SERVER_URL)%'
+#            $logServerToken: '%env(LOG_SERVER_TOKEN)%'
+#
+#    App\:
+#        resource: '../src/'
+#        exclude:
+#            - '../src/DependencyInjection/'
+#            - '../src/Entity/'
+#            - '../src/Kernel.php'
+#
+#    # External API Services
+#    App\Service\ExternalApi\PrepaidPlusService:
+#        arguments:
+#            $logger: '@monolog.logger.external_api'
+#            $baseUrl: '%env(PREPAIDPLUS_BASE_URL)%'
+#            $authToken: '%env(PREPAIDPLUS_AUTH_TOKEN)%'
+#
+#    App\Service\ExternalApi\CraftApiService:
+#        arguments:
+#            $logger: '@monolog.logger.external_api'
+#            $baseUrl: '%env(CRAFTAPI_BASE_URL)%'
+#            $username: '%env(CRAFTAPI_USERNAME)%'
+#            $password: '%env(CRAFTAPI_PASSWORD)%'
+#
+#    # Rate Limiter
+#    App\RateLimiter\ApiRateLimiter:
+#        arguments:
+#            $apiRateLimiterFactory: '@rate_limiter.api'
+#            $requestStack: '@request_stack'
+#            $logger: '@monolog.logger.security'
+#
+#    # Remote Logger
+#    App\Logger\RemoteLogger:
+#        arguments:
+#            $logServerUrl: '%env(LOG_SERVER_URL)%'
+#            $logServerToken: '%env(LOG_SERVER_TOKEN)%'
+#            $fallbackLogger: '@monolog.logger.app'
+#
+#    # Controllers
+#    App\Controller\:
+#        resource: '../src/Controller/'
+#        tags: ['controller.service_arguments']
+
+parameters:
+    craft_api_base_url: '%env(CRAFT_API_BASE_URL)%'
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        bind:
+            $baseUrl: '%env(CRAFT_API_BASE_URL)%'
+            $username: '%env(CRAFT_API_USERNAME)%'
+            $password: '%env(CRAFT_API_PASSWORD)%'
+            $authToken: '%env(PREPAID_PLUS_AUTH_TOKEN)%'
+            $prepaidPlusBaseUrl: '%env(PREPAID_PLUS_BASE_URL)%'
+            $logServerUrl: '%env(LOG_SERVER_URL)%'
+            $logServerToken: '%env(LOG_SERVER_TOKEN)%'
+
+    App\RateLimiter\ApiRateLimiter:
+        arguments:
+            $apiRateLimiterFactory: '@api.limiter'
+
+    App\Service\ExternalApi\CraftApiService:
+        arguments:
+            $logger: '@monolog.logger.external_api'
+            $baseUrl: '%env(CRAFT_API_BASE_URL)%'
+            $username: '%env(CRAFT_API_USERNAME)%'
+            $password: '%env(CRAFT_API_PASSWORD)%'
+
+
+    App\State\:
+        resource: '../src/State'
+        tags: [ 'controller.service_arguments' ]
+        autowire: true
+        autoconfigure: true
+
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+
+
+#services:
+#    App\RateLimiter\ApiRateLimiter:
+#        arguments:
+#            $apiRateLimiterFactory: '@api.limiter'
+#
+#    App\Service\ExternalApi\CraftApiService:
+#        arguments:
+#            $baseUrl: '%env(CRAFT_API_BASE_URL)%'
+#            $username: '%env(CRAFT_API_USERNAME)%'
+#            $password: '%env(CRAFT_API_PASSWORD)%'
+#    _defaults:
+#        autowire: true
+#        autoconfigure: true
+#        bind: {}
+##            $prepaidPlusBaseUrl: '%env(PREPAID_PLUS_BASE_URL)%'
+##            $prepaidPlusAuthToken: '%env(PREPAID_PLUS_AUTH_TOKEN)%'
+##            $craftApiBaseUrl: '%env(CRAFT_API_BASE_URL)%'
+##            $craftApiUsername: '%env(CRAFT_API_USERNAME)%'
+##            $craftApiPassword: '%env(CRAFT_API_PASSWORD)%'
+##            $logServerUrl: '%env(LOG_SERVER_URL)%'
+##            $logServerToken: '%env(LOG_SERVER_TOKEN)%'
+#
+#    App\:
+#        resource: '../src/'
+#        exclude:
+#            - '../src/DependencyInjection/'
+#            - '../src/Entity/'
+#            - '../src/Kernel.php'
+#
+#    # Remote Logger Service (comment out for now to fix database)
+#    # App\Logger\RemoteLogger:
+#    #     arguments:
+#    #         $logServerUrl: '%env(LOG_SERVER_URL)%'
+#    #         $logServerToken: '%env(LOG_SERVER_TOKEN)%'
+#    #         $fallbackLogger: '@logger'
+#
+#    # External API Services (comment out for now)
+#    # App\Service\ExternalApi\PrepaidPlusService:
+#    #     arguments:
+#    #         $logger: '@logger'
+#    #         $baseUrl: '%env(PREPAIDPLUS_BASE_URL)%'
+#    #         $authToken: '%env(PREPAIDPLUS_AUTH_TOKEN)%'

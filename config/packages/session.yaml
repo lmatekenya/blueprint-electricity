@@ -1,0 +1,9 @@
+framework:
+  session:
+    enabled: true
+    handler_id: null
+    cookie_secure: auto
+    cookie_samesite: lax
+    cookie_httponly: true
+    # Store sessions under var/sessions per environment
+    save_path: '%kernel.project_dir%/var/sessions/%kernel.environment%'
