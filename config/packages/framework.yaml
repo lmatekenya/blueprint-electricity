@@ -2,6 +2,12 @@
 framework:
     secret: '%env(APP_SECRET)%'
 
+    http_client:
+        # Local/dev only: avoid SSL verification issues on Windows or CI
+        default_options:
+            verify_peer: false
+            timeout: 15
+
     # Note that the session will be started ONLY if you read or write from it.
     session:
         cookie_lifetime: '%env(int:SESSION_LIFETIME)%'

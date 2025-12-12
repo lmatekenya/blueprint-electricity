@@ -78,6 +78,10 @@ services:
             $username: '%env(CRAFT_API_USERNAME)%'
             $password: '%env(CRAFT_API_PASSWORD)%'
 
+    App\Service\ElectricityManager:
+        arguments:
+            $em: '@doctrine.orm.entity_manager'
+            $logger: '@logger'
 
     App\State\:
         resource: '../src/State'

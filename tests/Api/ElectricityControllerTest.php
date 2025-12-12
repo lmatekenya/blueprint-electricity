@@ -45,7 +45,7 @@ class ElectricityControllerTest extends WebTestCase
         $this->client->request('POST', '/api/v1/auth/login', [], [], [
             'CONTENT_TYPE' => 'application/json',
         ], json_encode([
-            'email' => 'user@example.com',
+            'email' => 'user@smartplan.com',
             'password' => 'user123'
         ]));
 
@@ -82,7 +82,7 @@ class ElectricityControllerTest extends WebTestCase
                 'transID' => 'TXN_TEST_' . $i,
                 'meterNumber' => '12345678901',
                 'amount' => 50.00,
-                'email' => 'user@example.com',
+                'email' => 'user@smartplan.com',
                 'password' => 'user123'
             ]));
         }
@@ -100,7 +100,7 @@ class ElectricityControllerTest extends WebTestCase
             'transID' => 'TXN_TEST_001',
             'meterNumber' => '12345678901',
             // Missing amount field
-            'email' => 'user@example.com',
+            'email' => 'user@smartplan.com',
             'password' => 'user123'
         ]));
 
