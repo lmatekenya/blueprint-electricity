@@ -108,6 +108,9 @@ security:
             form_login:
                 login_path: app_login
                 check_path: app_login
+                username_parameter: email
+                password_parameter: password
+                default_target_path: /admin
             logout:
                 path: app_logout
 
@@ -157,7 +160,8 @@ security:
         - { path: ^/api/, roles: IS_AUTHENTICATED_FULLY }
 
         # Admin
-        - { path: ^/admin/login$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+#        - { path: ^/admin/login$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/admin/login, roles: PUBLIC_ACCESS}
         - { path: ^/admin, roles: ROLE_ADMIN }
 
         # Homepage

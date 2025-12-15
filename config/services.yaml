@@ -85,7 +85,7 @@ services:
 
     App\State\:
         resource: '../src/State'
-        tags: [ 'controller.service_arguments' ]
+#        tags: [ 'controller.service_arguments' ]
         autowire: true
         autoconfigure: true
 

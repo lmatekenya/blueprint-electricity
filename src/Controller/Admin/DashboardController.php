@@ -72,6 +72,8 @@ namespace App\Controller\Admin;
 
 use App\Entity\ElectricityTransaction;
 use App\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
@@ -80,12 +82,35 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[IsGranted('ROLE_ADMIN')]
+#[AdminDashboard(routePath: '/admin', routeName: 'admin')]
 class DashboardController extends AbstractDashboardController
 {
+//    #[Route('/admin', name: 'admin')]
+//    public function index(): Response
+//    {
+//        return $this->render('admin/dashboard.html.twig');
+//    }
+
+    public function __construct(
+        private readonly EntityManagerInterface $em
+    ) {}
+
     #[Route('/admin', name: 'admin')]
     public function index(): Response
     {
-        return $this->render('admin/dashboard.html.twig');
+        $repo = $this->em->getRepository(ElectricityTransaction::class);
+
+        return $this->render('admin/dashboard.html.twig', [
+            'totalTransactions'  => $repo->count([]),
+            'pending'            => $repo->count(['status' => 'pending']),
+            'success'            => $repo->count(['status' => 'success']),
+            'failed'             => $repo->count(['status' => 'failed']),
+            'recentTransactions' => $repo->findBy(
+                [],
+                ['createdAt' => 'DESC'],
+                10
+            ),
+        ]);
     }
 
     public function configureDashboard(): Dashboard

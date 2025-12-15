@@ -1,10 +1,9 @@
 {% extends '@EasyAdmin/page/content.html.twig' %}
-{% extends '@EasyAdmin/page/content.html.twig' %}
 
-{% block content %}
-    <h1>Welcome to the Admin Panel</h1>
-    <p>Use the menu to manage Users and Electricity Transactions.</p>
-{% endblock %}
+{#{% block content %}#}
+{#    <h1>Welcome to the Admin Panel</h1>#}
+{#    <p>Use the menu to manage Users and Electricity Transactions.</p>#}
+{#{% endblock %}#}
 {% block content %}
     <h1 style="font-size: 24px; font-weight: bold; margin-bottom: 20px;">Admin Dashboard</h1><br>
 
@@ -18,6 +17,7 @@
             <div style="font-size: 16px; color: #555;">Pending</div>
             <div style="font-size: 20px; font-weight: bold;">{{ pending }}</div>
         </div>
+
         <div style="flex: 1 1 150px; padding: 15px; background-color: #d4edda; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center;">
             <div style="font-size: 16px; color: #555;">Success</div>
             <div style="font-size: 20px; font-weight: bold;">{{ success }}</div>
