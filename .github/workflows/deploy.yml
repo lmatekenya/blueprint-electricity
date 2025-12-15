@@ -135,6 +135,15 @@ jobs:
                   cd "${REMOTE_PATH}"
 
                   # 4) Environment configuration
+
+                  # Ensure base .env exists (required by Symfony runtime)
+                  if [ ! -f .env ]; then
+                  sudo -u www-data bash -lc "cat > .env <<'EOT'
+                  APP_ENV=prod
+                  APP_DEBUG=0
+                  EOT"
+                  fi
+
                   # Create .env.local with production env and secrets
                   sudo -u www-data bash -lc "cat > .env.local <<EOT
                   APP_ENV=prod
