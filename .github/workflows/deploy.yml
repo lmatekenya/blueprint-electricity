@@ -38,7 +38,8 @@ jobs:
                   SSH_USER: ${{ secrets.SSH_USER }}
                   REMOTE_PATH: ${{ env.REMOTE_PATH }}
               run: |
-                  ssh -p "${SSH_PORT:-22}" "${SSH_USER}@${SSH_HOST}" "sudo mkdir -p '${REMOTE_PATH}'"
+                  ssh -p "${SSH_PORT:-22}" "${SSH_USER}@${SSH_HOST}" "sudo mkdir -p '${REMOTE_PATH}' &&
+                  sudo chown -R ${SSH_USER}:${SSH_USER} '${REMOTE_PATH}'"
 
             - name: Sync project to remote
               env:
