@@ -160,12 +160,17 @@ jobs:
                   sudo -u www-data composer install \
                     --no-dev --prefer-dist --optimize-autoloader --no-progress --no-interaction
 
-                  # 6) Optional: create DB and user with MySQL root (only if DB_* secrets provided)
-                  if [ -n "${DB_NAME}" ] && [ -n "${DB_USER}" ] && [ -n "${DB_PASSWORD}" ]; then
-                    sudo mysql -e "CREATE DATABASE IF NOT EXISTS \\\`${DB_NAME}\\\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
-                    sudo mysql -e "CREATE USER IF NOT EXISTS '${DB_USER}'@'localhost' IDENTIFIED BY '${DB_PASSWORD}';"
-                    sudo mysql -e "GRANT ALL PRIVILEGES ON \\\`${DB_NAME}\\\`.* TO '${DB_USER}'@'localhost'; FLUSH PRIVILEGES;"
-                  fi
+                  # 6) Use existing DB_USER/DB_PASSWORD for app (skip root creation)
+                      if [ -n "${DB_NAME}" ] && [ -n "${DB_USER}" ] && [ -n "${DB_PASSWORD}" ]; then
+                          echo "Using existing MySQL user ${DB_USER} for database ${DB_NAME}."
+                    # Ensure DATABASE_URL in .env.local points to this user
+                          sudo -u www-data bash -lc "cat > .env.local <<EOT
+                      APP_ENV=prod
+                      APP_DEBUG=0
+                      APP_SECRET=${APP_SECRET}
+                      DATABASE_URL=${DATABASE_URL}
+                      EOT"
+                      fi
 
                   # 7) Database migrate
                   sudo -u www-data php bin/console doctrine:database:create --if-not-exists --env=prod || true
