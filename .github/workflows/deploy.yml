@@ -67,6 +67,7 @@ jobs:
                   # App secrets and DB config
                   APP_SECRET: ${{ secrets.APP_SECRET }}
                   DATABASE_URL: ${{ secrets.DATABASE_URL }}
+                  DEFAULT_URI: ${{ secrets.DEFAULT_URI }}
 
                   # Optional (only if you want this workflow to create the database/user on the server)
                   DB_NAME: ${{ secrets.DB_NAME }}
@@ -78,6 +79,7 @@ jobs:
                      NGINX_SITE='${NGINX_SITE}' \
                      APP_SECRET='${APP_SECRET}' \
                      DATABASE_URL='${DATABASE_URL}' \
+                     DEFAULT_URI='${DEFAULT_URI}' \
                      DB_NAME='${DB_NAME}' \
                      DB_USER='${DB_USER}' \
                      DB_PASSWORD='${DB_PASSWORD}' \
@@ -93,6 +95,7 @@ jobs:
                   # Secrets from GitHub
                   APP_SECRET="${APP_SECRET:-}"
                   DATABASE_URL="${DATABASE_URL:-}"
+                  DEFAULT_URI="${DEFAULT_URI:-}"
                   DB_NAME="${DB_NAME:-}"
                   DB_USER="${DB_USER:-}"
                   DB_PASSWORD="${DB_PASSWORD:-}"
@@ -150,6 +153,7 @@ jobs:
                   APP_DEBUG=0
                   APP_SECRET=${APP_SECRET}
                   DATABASE_URL=${DATABASE_URL}
+                  DEFAULT_URI=${DEFAULT_URI}
                   EOT"
 
                   # 5) PHP dependencies (prod)
