@@ -73,11 +73,22 @@ jobs:
                   DB_USER: ${{ secrets.DB_USER }}
                   DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
               run: |
-                  ssh -p "${SSH_PORT:-22}" "${SSH_USER}@${SSH_HOST}" 'bash -se' << "EOF"
+                  ssh -p "${SSH_PORT:-22}" "${SSH_USER}@${SSH_HOST}" \
+                    "REMOTE_PATH='${REMOTE_PATH}' \
+                     NGINX_SITE='${NGINX_SITE}' \
+                     APP_SECRET='${APP_SECRET}' \
+                     DATABASE_URL='${DATABASE_URL}' \
+                     DB_NAME='${DB_NAME}' \
+                     DB_USER='${DB_USER}' \
+                     DB_PASSWORD='${DB_PASSWORD}' \
+                     bash -se" <<'EOF'
+
                   set -euo pipefail
 
-                  REMOTE_PATH="${REMOTE_PATH}"
-                  NGINX_SITE="${NGINX_SITE}"
+                  : "${REMOTE_PATH:?REMOTE_PATH not set}"
+                  : "${NGINX_SITE:?NGINX_SITE not set}"
+
+                  cd "${REMOTE_PATH}"
 
                   # Secrets from GitHub
                   APP_SECRET="${APP_SECRET:-}"
