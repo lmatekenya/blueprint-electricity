@@ -147,7 +147,7 @@ jobs:
                   EOT"
                   fi
 
-              # Create .env.local with production env and secrets
+                # Create .env.local with production env and secrets
                 sudo -u www-data bash -lc "cat > .env.local <<EOT
                 APP_ENV=prod
                 APP_DEBUG=0
