@@ -141,7 +141,7 @@ jobs:
 
                   # Ensure base .env exists (required by Symfony runtime)
                   if [ ! -f .env ]; then
-                  sudo -u www-data bash -lc "cat > .env <<'EOT'
+                    sudo -u www-data bash -lc "cat > .env <<'EOT'
                   APP_ENV=prod
                   APP_DEBUG=0
                   EOT"
