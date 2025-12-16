@@ -55,7 +55,6 @@ jobs:
             --exclude "var/log" \
             -e "ssh -p ${SSH_PORT:-22}" \
             ./ "${SSH_USER}@${SSH_HOST}:${REMOTE_PATH}"
-
       - name: Provision and deploy on remote
         env:
           SSH_HOST: ${{ secrets.SSH_HOST }}
