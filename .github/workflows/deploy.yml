@@ -90,7 +90,7 @@ jobs:
 
           cd "${REMOTE_PATH}"
 
-          # Secrets from GitHub (may be empty if not provided)
+          # Secrets from GitHub (may be empty)
           APP_SECRET="${APP_SECRET:-}"
           DATABASE_URL="${DATABASE_URL:-}"
           DEFAULT_URI="${DEFAULT_URI:-}"
@@ -151,7 +151,6 @@ jobs:
           # 6) Use existing DB_USER/DB_PASSWORD for app (skip root creation)
           if [ -n "${DB_NAME}" ] && [ -n "${DB_USER}" ] && [ -n "${DB_PASSWORD}" ]; then
             echo "Using existing MySQL user ${DB_USER} for database ${DB_NAME}."
-            # Ensure DATABASE_URL in .env.local points to this user
             sudo -u www-data bash -lc "printf '%s\n' 'APP_ENV=prod' 'APP_DEBUG=0' \"APP_SECRET=${APP_SECRET}\" \"DATABASE_URL=${DATABASE_URL}\" > '${REMOTE_PATH}/.env.local'"
           fi
 
@@ -173,7 +172,7 @@ jobs:
           PHPV="$(php -r 'echo PHP_MAJOR_VERSION.\".\".PHP_MINOR_VERSION;')"
           PHP_SOCK="/run/php/php${PHPV}-fpm.sock"
 
-          # Write the nginx vhost using printf to avoid nested heredoc problems
+          # Write the nginx vhost using printf to avoid heredoc issues
           sudo bash -lc "printf '%s\n' \
             'server {' \
             '    listen 8086;' \
