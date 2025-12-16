@@ -147,14 +147,14 @@ jobs:
             'APP_DEBUG=0' \
             > ${REMOTE_PATH}/.env"
             
-            # Create .env.local
-            sudo bash -lc "printf '%s\n' \
-            'APP_ENV=prod' \
-            'APP_DEBUG=0' \
-            'APP_SECRET=${APP_SECRET}' \
-            'DATABASE_URL=${DATABASE_URL}' \
-            'DEFAULT_URI=${DEFAULT_URI}' \
-            > ${REMOTE_PATH}/.env.local"
+              # Create .env.local
+              sudo bash -lc "printf '%s\n' \
+              'APP_ENV=prod' \
+              'APP_DEBUG=0' \
+              'APP_SECRET=${APP_SECRET}' \
+              'DATABASE_URL=${DATABASE_URL}' \
+              'DEFAULT_URI=${DEFAULT_URI}' \
+              > ${REMOTE_PATH}/.env.local"
             
             # Permissions (NOW paths expand correctly)
             sudo chown www-data:www-data \
