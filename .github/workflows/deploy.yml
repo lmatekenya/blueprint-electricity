@@ -147,14 +147,22 @@ jobs:
                   EOT"
                   fi
 
-                  # Create .env.local with production env and secrets
-                  cat > .env.local <<'EOT'
-                  APP_ENV=prod
-                  APP_DEBUG=0
-                  APP_SECRET=${APP_SECRET}
-                  DATABASE_URL=${DATABASE_URL}
-                  DEFAULT_URI=${DEFAULT_URI}
-                  EOT
+#                  # Create .env.local with production env and secrets
+#                  cat > .env.local <<'EOT'
+#                  APP_ENV=prod
+#                  APP_DEBUG=0
+#                  APP_SECRET=${APP_SECRET}
+#                  DATABASE_URL=${DATABASE_URL}
+#                  DEFAULT_URI=${DEFAULT_URI}
+#                  EOT
+
+                printf "%s\n" \
+                    "APP_ENV=prod" \
+                    "APP_DEBUG=0" \
+                    "APP_SECRET=${{ secrets.APP_SECRET }}" \
+                    "DATABASE_URL=\"mysql://electricity_user:${{ secrets.DB_PASSWORD }}@127.0.0.1:3306/blueprint_electricity?serverVersion=8.0&charset=utf8mb4\"" \
+                    "DEFAULT_URI=http://localhost:8086" \
+                > .env.local
 
                   # 5) PHP dependencies (prod)
                   sudo -u www-data composer install \
