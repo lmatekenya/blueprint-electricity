@@ -63,12 +63,10 @@ jobs:
           SSH_USER: ${{ secrets.SSH_USER }}
           REMOTE_PATH: ${{ env.REMOTE_PATH }}
           NGINX_SITE: ${{ env.NGINX_SITE }}
-
           # App secrets and DB config
           APP_SECRET: ${{ secrets.APP_SECRET }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           DEFAULT_URI: ${{ secrets.DEFAULT_URI }}
-
           # Optional (only if you want this workflow to create the database/user on the server)
           DB_NAME: ${{ secrets.DB_NAME }}
           DB_USER: ${{ secrets.DB_USER }}
@@ -147,30 +145,14 @@ APP_DEBUG=0
 EOT"
           fi
 
-#          # Create .env.local with production env and secrets
-#          cat > .env.local <<'EOT'
-#          APP_ENV=prod
-#          APP_DEBUG=0
-#          APP_SECRET=${APP_SECRET}
-#          DATABASE_URL=${DATABASE_URL}
-#          DEFAULT_URI=${DEFAULT_URI}
-#          EOT
-
-#        printf "%s\n" \
-#            "APP_ENV=prod" \
-#            "APP_DEBUG=0" \
-#            "APP_SECRET=${{ secrets.APP_SECRET }}" \
-#            "DATABASE_URL=\"mysql://electricity_user:${{ secrets.DB_PASSWORD }}@127.0.0.1:3306/blueprint_electricity?serverVersion=8.0&charset=utf8mb4\"" \
-#            "DEFAULT_URI=http://localhost:8086" \
-#        > .env.local
-
-          sudo tee /var/www/electricity/.env.local > /dev/null <<'EOF'
-          APP_ENV=prod
-          APP_DEBUG=0
-          APP_SECRET=${{ secrets.APP_SECRET }}
-          DATABASE_URL="mysql://electricity_user:${{ secrets.DB_PASSWORD }}@127.0.0.1:3306/blueprint_electricity?serverVersion=8.0&charset=utf8mb4"
-          DEFAULT_URI=http://localhost:8086
-          EOF
+          # Create .env.local with production env and secrets
+          sudo -u www-data bash -lc "cat > .env.local <<'EOT'
+APP_ENV=prod
+APP_DEBUG=0
+APP_SECRET=${APP_SECRET}
+DATABASE_URL=${DATABASE_URL}
+DEFAULT_URI=${DEFAULT_URI}
+EOT"
 
           # 5) PHP dependencies (prod)
           sudo -u www-data composer install \
@@ -180,7 +162,7 @@ EOT"
           if [ -n "${DB_NAME}" ] && [ -n "${DB_USER}" ] && [ -n "${DB_PASSWORD}" ]; then
             echo "Using existing MySQL user ${DB_USER} for database ${DB_NAME}."
             # Ensure DATABASE_URL in .env.local points to this user
-            sudo -u www-data bash -lc "cat > .env.local <<EOT
+            sudo -u www-data bash -lc "cat > .env.local <<'EOT'
 APP_ENV=prod
 APP_DEBUG=0
 APP_SECRET=${APP_SECRET}
@@ -203,10 +185,10 @@ EOT"
           sudo setfacl -dR -m u:www-data:rwx var || true
 
           # 10) Nginx vhost on port 8086 + PHP-FPM sock discovery
-          PHPV="$(php -r 'echo PHP_MAJOR_VERSION.\".\".PHP_MINOR_VERSION;')"
+          PHPV="$(php -r 'echo PHP_MAJOR_VERSION.".".PHP_MINOR_VERSION;')"
           PHP_SOCK="/run/php/php${PHPV}-fpm.sock"
 
-          sudo bash -lc "cat > '${NGINX_SITE}' <<NGINX
+          sudo bash -lc "cat > '${NGINX_SITE}' <<'NGINX'
 server {
     listen 8086;
     server_name _;
