@@ -136,25 +136,21 @@ jobs:
           cd "${REMOTE_PATH}"
 
             # 4) Environment configuration (FINAL FIX)
-            
-            # Ensure directory exists
-            sudo mkdir -p "${REMOTE_PATH}"
-            sudo chown -R www-data:www-data "${REMOTE_PATH}"
-            
-            # Create .env
-            sudo bash -lc "printf '%s\n' \
-            'APP_ENV=prod' \
-            'APP_DEBUG=0' \
-            > ${REMOTE_PATH}/.env"
-            
-            # Create .env.local
-              sudo tee "${REMOTE_PATH}/.env.local" > /dev/null <<EOF
-              APP_ENV=prod
-              APP_DEBUG=0
-              APP_SECRET='${APP_SECRET}'
-              DATABASE_URL='${DATABASE_URL}'
-              DEFAULT_URI='${DEFAULT_URI}'
-              EOF
+                sudo tee "${REMOTE_PATH}/.env" > /dev/null <<EOF
+                APP_ENV=prod
+                APP_DEBUG=0
+                EOF
+                
+                sudo tee "${REMOTE_PATH}/.env.local" > /dev/null <<EOF
+                APP_ENV=prod
+                APP_DEBUG=0
+                APP_SECRET='${APP_SECRET}'
+                DATABASE_URL='${DATABASE_URL}'
+                DEFAULT_URI='${DEFAULT_URI}'
+                EOF
+                
+                sudo chown www-data:www-data "${REMOTE_PATH}/.env" "${REMOTE_PATH}/.env.local"
+                sudo chmod 640 "${REMOTE_PATH}/.env" "${REMOTE_PATH}/.env.local"
 
             
             # Permissions (NOW paths expand correctly)
