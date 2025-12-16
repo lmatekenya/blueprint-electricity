@@ -135,35 +135,36 @@ jobs:
 
           cd "${REMOTE_PATH}"
 
-            # 4) Environment configuration (CORRECT & SAFE)
+            # 4) Environment configuration (FINAL FIX)
             
-            # Ensure directory exists and ownership is correct
+            # Ensure directory exists
             sudo mkdir -p "${REMOTE_PATH}"
             sudo chown -R www-data:www-data "${REMOTE_PATH}"
             
-            # Create .env (Symfony requires this)
+            # Create .env
             sudo bash -lc "printf '%s\n' \
             'APP_ENV=prod' \
             'APP_DEBUG=0' \
-            > '${REMOTE_PATH}/.env'"
+            > ${REMOTE_PATH}/.env"
             
-            # Create .env.local (secrets)
+            # Create .env.local
             sudo bash -lc "printf '%s\n' \
             'APP_ENV=prod' \
             'APP_DEBUG=0' \
             'APP_SECRET=${APP_SECRET}' \
             'DATABASE_URL=${DATABASE_URL}' \
             'DEFAULT_URI=${DEFAULT_URI}' \
-            > '${REMOTE_PATH}/.env.local'"
+            > ${REMOTE_PATH}/.env.local"
             
-            # Permissions
+            # Permissions (NOW paths expand correctly)
             sudo chown www-data:www-data \
-              '${REMOTE_PATH}/.env' \
-              '${REMOTE_PATH}/.env.local'
+              ${REMOTE_PATH}/.env \
+              ${REMOTE_PATH}/.env.local
             
             sudo chmod 640 \
-              '${REMOTE_PATH}/.env' \
-              '${REMOTE_PATH}/.env.local'
+              ${REMOTE_PATH}/.env \
+              ${REMOTE_PATH}/.env.local
+
 
 
           # 5) PHP dependencies (prod)
