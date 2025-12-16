@@ -90,7 +90,7 @@ jobs:
 
           cd "${REMOTE_PATH}"
 
-          # Secrets from GitHub
+          # Secrets from GitHub (may be empty if not provided)
           APP_SECRET="${APP_SECRET:-}"
           DATABASE_URL="${DATABASE_URL:-}"
           DEFAULT_URI="${DEFAULT_URI:-}"
@@ -136,15 +136,13 @@ jobs:
           cd "${REMOTE_PATH}"
 
           # 4) Environment configuration
-
           # Ensure base .env exists (required by Symfony runtime)
           if [ ! -f .env ]; then
-            # use printf to avoid nested heredoc indentation issues
-            sudo -u www-data bash -lc "printf '%s\n' 'APP_ENV=prod' 'APP_DEBUG=0' > .env"
+            sudo -u www-data bash -lc "printf '%s\n' 'APP_ENV=prod' 'APP_DEBUG=0' > '${REMOTE_PATH}/.env'"
           fi
 
-          # Create .env.local with production env and secrets
-          sudo -u www-data bash -lc "printf '%s\n' 'APP_ENV=prod' 'APP_DEBUG=0' \"APP_SECRET=${APP_SECRET}\" \"DATABASE_URL=${DATABASE_URL}\" \"DEFAULT_URI=${DEFAULT_URI}\" > .env.local"
+          # Create .env.local with production env and secrets (variables expand on remote)
+          sudo -u www-data bash -lc "printf '%s\n' 'APP_ENV=prod' 'APP_DEBUG=0' \"APP_SECRET=${APP_SECRET}\" \"DATABASE_URL=${DATABASE_URL}\" \"DEFAULT_URI=${DEFAULT_URI}\" > '${REMOTE_PATH}/.env.local'"
 
           # 5) PHP dependencies (prod)
           sudo -u www-data composer install \
@@ -154,7 +152,7 @@ jobs:
           if [ -n "${DB_NAME}" ] && [ -n "${DB_USER}" ] && [ -n "${DB_PASSWORD}" ]; then
             echo "Using existing MySQL user ${DB_USER} for database ${DB_NAME}."
             # Ensure DATABASE_URL in .env.local points to this user
-            sudo -u www-data bash -lc "printf '%s\n' 'APP_ENV=prod' 'APP_DEBUG=0' \"APP_SECRET=${APP_SECRET}\" \"DATABASE_URL=${DATABASE_URL}\" > .env.local"
+            sudo -u www-data bash -lc "printf '%s\n' 'APP_ENV=prod' 'APP_DEBUG=0' \"APP_SECRET=${APP_SECRET}\" \"DATABASE_URL=${DATABASE_URL}\" > '${REMOTE_PATH}/.env.local'"
           fi
 
           # 7) Database migrate
@@ -167,7 +165,7 @@ jobs:
           sudo -u www-data php bin/console cache:clear --env=prod
           sudo -u www-data php bin/console cache:warmup --env=prod
 
-          # 9) Permissions on writeable dirs
+          # 9) Permissions on writable dirs
           sudo setfacl -R -m u:www-data:rwx var || true
           sudo setfacl -dR -m u:www-data:rwx var || true
 
@@ -175,36 +173,36 @@ jobs:
           PHPV="$(php -r 'echo PHP_MAJOR_VERSION.\".\".PHP_MINOR_VERSION;')"
           PHP_SOCK="/run/php/php${PHPV}-fpm.sock"
 
-          sudo bash -lc "cat > '${NGINX_SITE}' <<'NGINX'
-server {
-    listen 8086;
-    server_name _;
-    root ${REMOTE_PATH}/public;
-    index index.php;
-
-    access_log /var/log/nginx/electricity.access.log;
-    error_log  /var/log/nginx/electricity.error.log;
-
-    client_max_body_size 16m;
-
-    location / {
-        try_files \$uri /index.php\$is_args\$args;
-    }
-
-    location ~ \.php$ {
-        include snippets/fastcgi-php.conf;
-        fastcgi_pass unix:${PHP_SOCK};
-        fastcgi_read_timeout 300;
-        fastcgi_param APP_ENV prod;
-    }
-
-    location ~* \.(?:ico|png|jpg|jpeg|gif|svg|css|js|woff|woff2|ttf)$ {
-        expires 30d;
-        access_log off;
-        add_header Cache-Control "public, max-age=2592000";
-    }
-}
-NGINX"
+          # Write the nginx vhost using printf to avoid nested heredoc problems
+          sudo bash -lc "printf '%s\n' \
+            'server {' \
+            '    listen 8086;' \
+            '    server_name _;' \
+            '    root ${REMOTE_PATH}/public;' \
+            '    index index.php;' \
+            '' \
+            '    access_log /var/log/nginx/electricity.access.log;' \
+            '    error_log  /var/log/nginx/electricity.error.log;' \
+            '' \
+            '    client_max_body_size 16m;' \
+            '' \
+            '    location / {' \
+            '        try_files \\$uri /index.php\\$is_args\\$args;' \
+            '    }' \
+            '' \
+            '    location ~ \\.php$ {' \
+            '        include snippets/fastcgi-php.conf;' \
+            '        fastcgi_pass unix:${PHP_SOCK};' \
+            '        fastcgi_read_timeout 300;' \
+            '        fastcgi_param APP_ENV prod;' \
+            '    }' \
+            '' \
+            '    location ~* \\.(?:ico|png|jpg|jpeg|gif|svg|css|js|woff|woff2|ttf)$ {' \
+            '        expires 30d;' \
+            '        access_log off;' \
+            '        add_header Cache-Control \"public, max-age=2592000\";' \
+            '    }' \
+            '}' > '${NGINX_SITE}'"
 
           sudo ln -sf "${NGINX_SITE}" /etc/nginx/sites-enabled/electricity.conf
           sudo nginx -t
